@@ -56,19 +56,6 @@ qqline(age, col = "red")
 opar <- par(no.readonly = TRUE)
 par(mfrow = c(1, 2))
 
-with(heart_data, {
-  qqnorm(age[DEATH_EVENT == "yes"], 
-         main = "Risk of heart failure depending on Age")
-  qqline(age[DEATH_EVENT == "yes"])
-})
-
-with(heart_data, {
-  qqnorm(age[DEATH_EVENT == "no"], 
-         main = "Risk of heart failure not depending on Age")
-  qqline(age[DEATH_EVENT == "no"])
-})
-
-par(opar)
 
 # Formal test of normality
 # provided through widely used Shapiro-Wilks test
@@ -86,3 +73,4 @@ table <- table(age, DEATH_EVENT)
 result <- chisq.test(table)
 result
 detach(heart_data)
+

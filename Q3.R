@@ -1,14 +1,5 @@
-#Q1
+#Q3
 
-#Load the Heart Failure dataset
-heart_data1 <- read.csv("HeartFailure.csv")
-heart_data1
-
-#removes any rows that contains NA 
-heart_data <- na.omit(heart_data1)
-
-#drops any duplicate rows
-heart_data <- unique(heart_data)
 
 #Using pairs() to examine correlations between variables
 pairs(heart_data, labels = colnames(heart_data), main = "Heart failure dataset correlation plot")
@@ -33,68 +24,52 @@ pairs.panels(heart_data,
              stars = TRUE,       # If TRUE, adds significance level with stars
              ci = TRUE)          # If TRUE, adds confidence intervals
 
-#Q1
-
 #showing the categorical data in a plot
 attach(heart_data)
-plot(diabetes, DEATH_EVENT, pch=19, col= "lightblue")
+plot(ejection_fraction, DEATH_EVENT, pch=19, col= "lightblue")
 
-# labels starts with what is assigned to lower value first
-# eg 0 = no, 1 = yes
-heart_data$death <- factor(heart_data$DEATH_EVENT, labels = c("no", "yes"))
-heart_data
+install.packages("ggplot2")
+library(ggplot2)
+ggplot(heart_data, aes(x= DEATH_EVENT, y= ejection_fraction)) + geom_boxplot()
 
 library("lattice")
 attach(heart_data)
-histogram(~diabetes | death, 
+histogram(ejection_fraction ,DEATH_EVENT, 
           data = heart_data, 
           main = "Distribution of heart failure data", 
-          xlab = "Patients having Diabetes or not", 
+          xlab = "Ejection fraction", 
           ylab = "Risk of heart failure")
 detach(heart_data)
+
 
 #-----------------------------------------------------------------
 #Appropriate testing 
 #-----------------------------------------------------------------
+# Quantile-quantile plot allows us to check if the
+# data is distributed normally
+attach(heart_data)
+qqnorm(ejection_fraction)
 
+#line represents normal distribution
+qqline(ejection_fraction, col = "red")
 
 opar <- par(no.readonly = TRUE)
-# arrange plots in 1 rows and 2 column
 par(mfrow = c(1, 2))
 
-with(heart_data, {
-  qqnorm(diabetes[death == "yes"], 
-         main = "Risk of heart failure because of diabetes")
-  qqline(diabetes[death == "yes"])
-})
-
-with(heart_data, {
-  qqnorm(diabetes[death == "no"], 
-         main = "Risk of heart failure not due to diabetes")
-  qqline(diabetes[death == "no"])
-})
-
-par(opar)
 
 # Formal test of normality
 # provided through widely used Shapiro-Wilks test
-normality_test <- shapiro.test(heart_data$diabetes)
+normality_test <- shapiro.test(heart_data$ejection_fraction)
 normality_test$p.value
 # p-value tells us the chances that the sample comes 
 # from a normal distribution 
 # p-value is clearly lower than 0.05
 # so not normally distributed
 
-#wilcox test
-wilcox.test(diabetes~death)
-
-#Wilcoxon rank sum test with continuity correction
-
-
 
 #chi-squared test
 attach(heart_data)
-table <- table(diabetes, DEATH_EVENT)
+table <- table(ejection_fraction, DEATH_EVENT)
 result <- chisq.test(table)
 result
 detach(heart_data)
